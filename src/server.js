@@ -3,17 +3,11 @@ const app=express();
 const connectDB=require("./config/database")
 const User=require("./model/user")
 
-
+app.use(express.json())
 
 app.post("/signup",async(req,res)=>{
 
-    const userObj={
-        firstName:"Balaji",
-        email:"balu@gmail.com",
-        age:20
-    }
-
-    const user=new User(userObj);
+    const user=new User(req.body);
    
     try {
         await user.save()
@@ -26,8 +20,56 @@ app.post("/signup",async(req,res)=>{
 
 })
 
+//get user by email
+app.get("/signup1",async(req,res)=>{
+    const userEmail=req.body.email;
+    try {
+            const user=await User.find({email:userEmail});
+            if(user.length===0){
+                res.send("User not found")
+            }
+            else{
+                res.send(user);
+            }
+            
+
+    } catch (error) {
+        res.send("something went wrong")
+    }
+})
 
 
+app.get("/feed",async(req,res)=>{
+     try {
+        const user=await User.find({})
+        res.send(user)
+     } catch (error) {
+        res.send("something went wrong")
+     }
+})
+
+
+app.delete("/delete",async(req,res)=>{
+     const userId=req.body.userId;
+    try {
+       const user= await User.findByIdAndDelete(userId)
+       res.send("User deleted successfully")
+    } catch (error) {
+         res.send("something went wrong")
+    }
+})
+
+app.patch("/update",async(req,res)=>{
+    const userId=req.body.userId
+    const data=req.body
+
+    try {
+        const user=await User.findByIdAndUpdate({_id:userId},data)
+        res.send("User Updated successfully")
+    } catch (error) {
+         res.send("something went wrong")
+    }
+})
 
 connectDB()
     .then(()=>{
