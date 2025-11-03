@@ -2,16 +2,32 @@ const express=require("express")
 const app=express();
 const connectDB=require("./config/database")
 const User=require("./model/user")
+const {validatesignupdata}=require("./utils/validation")
+const bcrypt=require("bcrypt")
 
 app.use(express.json())
 
 app.post("/signup",async(req,res)=>{
 
-    const user=new User(req.body);
    
     try {
+        validatesignupdata(req);
+
+        const {firstName,email,age,password}=req.body;
+
+        const hasedPassword=await bcrypt.hash(password,10);
+
+        const user=new User(
+           { 
+            firstName,
+            email,
+            age,
+            password:hasedPassword
+           }
+
+        );
         await user.save()
-       res.send("User saved successfully")
+         res.send("User saved successfully")
         
     } catch (error) {
         res.status(500).send("Error saving User data")
@@ -20,24 +36,27 @@ app.post("/signup",async(req,res)=>{
 
 })
 
-//get user by email
-app.get("/signup1",async(req,res)=>{
-    const userEmail=req.body.email;
+app.post("/login",async(req,res)=>{
+     
     try {
-            const user=await User.find({email:userEmail});
-            if(user.length===0){
-                res.send("User not found")
+            const {email,password}=req.body;
+
+            const user=await User.findOne({email:email})
+            
+            const isPassword=await bcrypt.compare(password,user.password)
+
+            if(isPassword){
+                res.send("User login successfully")
             }
             else{
-                res.send(user);
+                res.send("Invalid credentials")
             }
-            
+   
 
     } catch (error) {
-        res.send("something went wrong")
+        res.send("Something went wrong")
     }
 })
-
 
 app.get("/feed",async(req,res)=>{
      try {
