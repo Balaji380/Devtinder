@@ -20,6 +20,16 @@ const validatesignupdata=(req)=>{
 
 }
 
+
+const validateProfileEdit=(req)=>{
+    const allowedUpdates=["firstName","age"]
+
+    const isEditAllowed=Object.keys(req.body).every(key=>allowedUpdates.includes(key))
+
+    return isEditAllowed
+
+}
 module.exports={
-    validatesignupdata
+    validatesignupdata,
+    validateProfileEdit
 }

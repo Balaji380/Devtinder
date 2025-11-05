@@ -1,72 +1,21 @@
 const express=require("express")
 const app=express();
 const connectDB=require("./config/database")
-const User=require("./model/user")
-const {validatesignupdata}=require("./utils/validation")
-const bcrypt=require("bcrypt")
+const cookieParser=require("cookie-parser")
+const jwt=require("jsonwebtoken")
+const authRouter=require("./Routes/authRouter")
+const profileRouter=require("./Routes/profileRouter");
+const requestRoute = require("./Routes/requestRoute");
+const userRoute=require("./Routes/userRouter")
 
 app.use(express.json())
+app.use(cookieParser())
 
-app.post("/signup",async(req,res)=>{
 
-   
-    try {
-        validatesignupdata(req);
-
-        const {firstName,email,age,password}=req.body;
-
-        const hasedPassword=await bcrypt.hash(password,10);
-
-        const user=new User(
-           { 
-            firstName,
-            email,
-            age,
-            password:hasedPassword
-           }
-
-        );
-        await user.save()
-         res.send("User saved successfully")
-        
-    } catch (error) {
-        res.status(500).send("Error saving User data")
-    }
-    
-
-})
-
-app.post("/login",async(req,res)=>{
-     
-    try {
-            const {email,password}=req.body;
-
-            const user=await User.findOne({email:email})
-            
-            const isPassword=await bcrypt.compare(password,user.password)
-
-            if(isPassword){
-                res.send("User login successfully")
-            }
-            else{
-                res.send("Invalid credentials")
-            }
-   
-
-    } catch (error) {
-        res.send("Something went wrong")
-    }
-})
-
-app.get("/feed",async(req,res)=>{
-     try {
-        const user=await User.find({})
-        res.send(user)
-     } catch (error) {
-        res.send("something went wrong")
-     }
-})
-
+app.use("/",authRouter)
+app.use("/",profileRouter)
+app.use("/",requestRoute)
+app.use("/",userRoute)
 
 app.delete("/delete",async(req,res)=>{
      const userId=req.body.userId;
