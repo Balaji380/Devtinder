@@ -7,7 +7,15 @@ const authRouter=require("./Routes/authRouter")
 const profileRouter=require("./Routes/profileRouter");
 const requestRoute = require("./Routes/requestRoute");
 const userRoute=require("./Routes/userRouter")
+const cors=require("cors")
 
+
+app.use(cors(
+   { 
+    origin:"http://localhost:5173",
+    credentials:true
+   }
+))
 app.use(express.json())
 app.use(cookieParser())
 

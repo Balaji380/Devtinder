@@ -12,7 +12,7 @@ authRouter.post("/signup",async(req,res)=>{
     try {
         validatesignupdata(req);
 
-        const {firstName,email,age,password}=req.body;
+        const {firstName,email,age,gender,password,photoURL}=req.body;
 
         const hasedPassword=await bcrypt.hash(password,10);
 
@@ -21,11 +21,12 @@ authRouter.post("/signup",async(req,res)=>{
             firstName,
             email,
             age,
-            password:hasedPassword
+            gender,
+            password:hasedPassword,
+            photoURL
            }
 
         );
-        console.log(user)
         await user.save()
          res.send("User saved successfully")
         
@@ -46,7 +47,7 @@ authRouter.post("/login",async(req,res)=>{
 
             const user=await User.findOne({email})
             if(!user){
-                throw new Error("User Not Found")
+                return res.status(401).send("Invalid credentails")
             }
             
             const isPassword=await user.validatePassword(password)
@@ -60,17 +61,17 @@ authRouter.post("/login",async(req,res)=>{
          
 
             res.cookie("token",token)
-            res.send("User login sucess")
+            return res.json(user)
 
         
             }
             else {
-                throw new Error("Invalid credentails")
+                return res.status(401).send("Invalid credentails")
             }
    
 
     } catch (error) {
-        res.send("Something went wrong")
+        res.status(401).send("Something went wrong")
     }
 })
 

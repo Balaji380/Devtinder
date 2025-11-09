@@ -1,11 +1,14 @@
 const mongoose=require("mongoose")
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
+const validator = require("validator");
+
 
 const userSchema=mongoose.Schema(
     {
         firstName:{
             type:String
+            
         },
         email:{
             type:String
@@ -15,7 +18,28 @@ const userSchema=mongoose.Schema(
         },
         password:{
             type:String
+        },
+        gender:{
+            type:String,
+            values:["Male","Female","Others"],
+            message:`{VALUE} is not valid gender type`
+        },
+        photoURL:{
+            type:String,
+            default: "https://geographyandyou.com/images/user-profile.png",
+            validate(value) {
+                if (!validator.isURL(value)) {
+                throw new Error("Invalid Photo URL: " + value);
+                }
+            },
+        },
+        about:{
+            type:String,
+        },
+        skills:{
+            type:[String],
         }
+
     },
     {
         timestamps:true

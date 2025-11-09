@@ -9,7 +9,7 @@ const userAuth=async(req,res,next)=>{
         const {token}=req.cookies
 
         if(!token){
-            throw new Error("Token is Invalid")
+            return res.status(401).json({message:"Please login first"})
         }
 
         //validate token
@@ -21,15 +21,15 @@ const userAuth=async(req,res,next)=>{
         const user=await User.findById(_id)
 
     if(!user){
-        throw new Error("User Not found")
+        return res.status(401).json({ message: "User not found" });
     }
 
     req.user=user
 
-    next();
+     next();
         
     } catch (error) {
-        res.send(400).send(error.message)
+    return res.status(401).json({ message: "Unauthorized - invalid token" });
     }
     
 

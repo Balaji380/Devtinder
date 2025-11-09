@@ -7,7 +7,8 @@ const connectionRequestSchema=mongoose.Schema(
         ref:"User"
        },
     toUserId:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
        },
     status:{
         type:String,
@@ -18,7 +19,7 @@ const connectionRequestSchema=mongoose.Schema(
         },
        }
   },{
-    timestramp:true
+    timestamps:true
   }
 )
 
