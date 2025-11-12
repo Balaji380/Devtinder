@@ -17,7 +17,7 @@ userRouter.get("/user/received",userAuth,async(req,res)=>{
                 status:"interested"
             }
         )
-        .populate("fromUserId","firstName age")
+        .populate("fromUserId",user_safe_data)
 
 
         res.json({
